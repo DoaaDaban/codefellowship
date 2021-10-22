@@ -1,0 +1,17 @@
+body{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+footer {
+    background-color: blueviolet;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    /*position: fixed;*/
+    /*bottom: 0;*/
+    width: 100%;
+    color: white;
+    margin-top: auto;
+}

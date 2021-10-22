@@ -1,10 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Users</title>
+    <link rel="stylesheet" th:href="@{/styles/reset.css}"
+          href="../static/styles/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link th:insert="fragments/navbar.html :: navbarStyle">
+    <link th:insert="fragments/footer.html :: footerStyle" >
+    <link rel="stylesheet" th:href="@{/styles/users.css}"
+          href="../static/styles/users.css">
 </head>
 <body>
+<nav th:replace="fragments/navbar.html :: header"> </nav>
 
+<div class="container users-list" th:if="${users.size() > 0}">
+    <div class="row justify-content-md-center">
+        <div class="col-sm-4 col-lg-3" th:each="user : ${users}">
+
+            <a th:href="'/user/' + ${user.id}">
+                <span><img src="../static/images/profile.png" th:src="@{/images/profile.png}" th:alt="${user.firstName}" alt=""></span>
+                <span th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
+            </a>
+
+        </div>
+    </div>
+</div>
+<div class="container users-list" th:unless="${users.size() > 0}">
+    <div class="row justify-content-md-center">
+        <p>There are no users yet, You can signup from <a href="/signup">here</a></p>
+    </div>
+</div>
+
+<footer th:replace="fragments/footer.html :: footer"> </footer>
 </body>
 </html>

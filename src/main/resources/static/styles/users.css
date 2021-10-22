@@ -1,0 +1,26 @@
+/*.users-list{*/
+/*    display: flex;*/
+/*    flex-wrap: wrap;*/
+/*    margin: 50px auto;*/
+/*    justify-content: space-between;*/
+/*    !*min-height: 600px;*!*/
+/*}*/
+
+/*.users-list div{*/
+/*    margin: 50px auto;*/
+/*}*/
+
+.users-list div a{
+    text-decoration: none;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    /*justify-content: space-between;*/
+    font-size: 20px;
+}
+.users-list div a img{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-right: 10px;
+}

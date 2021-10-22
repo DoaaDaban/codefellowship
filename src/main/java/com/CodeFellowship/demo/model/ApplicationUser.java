@@ -1,51 +1,187 @@
 package com.CodeFellowship.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.util.Collection;
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
+@JsonIgnoreProperties(value = { "posts" })
 public class ApplicationUser implements UserDetails {
     @Id
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String password;
 
     @Column(unique = true)
     private String username;
 
-    private String password;
     private String firstName;
     private String lastName;
-    private String dateOfBirth;
     private String bio;
+    private Date dateOfBirth;
 
-    public ApplicationUser(String username, String password) {
-        this.username = username;
-        this.password = password;
+    @OneToMany(mappedBy = "applicationUser")
+    private List<Post> posts;
+
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roles = new HashSet<>();
+
+
+    @ManyToMany(cascade = CascadeType.MERGE)
+    @JoinTable(name="UserRel",
+            joinColumns={@JoinColumn(name="UserId")},
+            inverseJoinColumns={@JoinColumn(name="ParentId")})
+    private Set<ApplicationUser> following = new HashSet<>();
+
+    //    @ManyToMany(cascade = CascadeType.ALL)
+//    @JoinTable(name="UserRel",
+//            joinColumns={@JoinColumn(name="ParentId")},
+//            inverseJoinColumns={@JoinColumn(name="UserId")})
+
+    @ManyToMany(mappedBy="following")
+    private Set<ApplicationUser> followers = new HashSet<>();
+
+    public ApplicationUser() {
     }
 
-    public Long getId() {
-        return id;
+    public ApplicationUser(String password, String username, String firstName, String lastName, String bio, Date dateOfBirth) {
+        this.password = password;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.bio = bio;
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Set<ApplicationUser> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Set<ApplicationUser> followers) {
+        this.followers = followers;
+    }
+
+    public Set<ApplicationUser> getFollowing() {
+        return following;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public ApplicationUser(String username, String password, String firstName, String lastName, String dateOfBirth, String bio) {
-        this.username = username;
+
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public void setFollowing(Set<ApplicationUser> following) {
+        this.following = following;
+    }
+
+    public void addFollowing(ApplicationUser user){
+        this.following.add(user);
+    }
+    public void addFollower(ApplicationUser user){
+        this.followers.add(user);
+    }
+
+    public void deleteFollowing(ApplicationUser user){
+        this.following.remove(user);
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
         this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
         this.bio = bio;
     }
 
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
 
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void setRole(Role newRole) {
+        roles.add(newRole);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<Role> roles = getRoles();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
+
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -65,61 +201,5 @@ public class ApplicationUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
     }
 }

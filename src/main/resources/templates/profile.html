@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile Page</title>
+  <link rel="stylesheet" th:href="@{/styles/reset.css}"
+        href="../static/styles/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link th:insert="fragments/navbar.html :: navbarStyle" >
+  <link th:insert="fragments/footer.html :: footerStyle" >
+  <link rel="stylesheet" th:href="@{/styles/profile.css}"
+        href="../static/styles/profile.css">
+</head>
+<body>
+<nav th:replace="fragments/navbar.html :: header"> </nav>
+<!--<header>-->
+
+<div class="container">
+  <div class="row" th:if="${showError == true}">
+    <div class="alert alert-danger" role="alert" th:text="${errorPassword}">
+
+    </div>
+  </div>
+  <div class="row" th:if="${showError == false}">
+    <div class="alert alert-success" role="alert">
+      Your password has been changed.
+    </div>
+  </div>
+  <!--        th:if="${evaluation &lt; 49 and evaluation &gt; 29}"-->
+  <div class="row">
+    <div class="col profile-image">
+      <img src="../static/images/profile.png" th:src="@{/images/profile.png}" th:alt="${username}" alt="">
+      <p th:text="${username}"></p>
+      <div>
+        <form style="display: inline" th:if="${!showPostForm eq true and isFollowing eq true}" method="POST" th:action="@{'/unfollow/' + ${id}}">
+          <button type="submit" class="btn btn-success btn-sm">Unfollow</button>
+        </form>
+        <form style="display: inline" th:if="${!showPostForm eq true and (isFollowing eq null or isFollowing eq false)}" method="POST" th:action="@{'/follow/' + ${id}}">
+          <button type="submit" class="btn btn-success btn-sm">follow</button>
+        </form>
+        <button th:if="${isAuthorized}" type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Edit Profile</button>
+        <button th:if="${isAuthorized}" type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal2">Change Password</button>
+      </div>
+    </div>
+    <div class="col">
+      <p th:text="'First Name: ' + ${firstName}"></p>
+      <p th:text="'Last Name: ' + ${lastName}"></p>
+      <p th:text="'Date Of Birth: ' + ${date}"></p>
+
+    </div>
+    <div class="col">
+      <h3>Bio</h3>
+      <p th:text="${bio}"></p>
+    </div>
+    <div th:if="${showPostForm}" class="col">
+      <form method="POST" th:action="@{'/posts/' + ${id}}">
+        <!--                    <h3><label for="body">Body</label></h3>-->
+        <!--                    <textarea id="body" name="body" required rows="8" cols="55"></textarea>-->
+        <div class="mb-3">
+          <label for="body" class="form-label">Post Body</label>
+          <textarea class="form-control" id="body" name="body" rows="3" cols="40"></textarea>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add Post">
+      </form>
+    </div>
+  </div>
+</div>
+<!--</header>-->
+<div th:replace="fragments/modals.html :: editProfileModal(id=${id})"> </div>
+<div th:replace="fragments/modals.html :: changePassword(id=${id})"> </div>
+
+<!--<main th:if="${posts.size() > 0}">-->
+<!--    <div class="card" style="width: 18rem;" th:each="post : ${posts}">-->
+<!--        <div class="card-body">-->
+<!--            <p class="card-text" th:text="'Created at: ' +${post.getFormattedDate()}"></p>-->
+<!--            <p class="card-text" th:text="${post.body}"></p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</main>-->
+<!--<main th:unless="${posts.size() > 0}">-->
+<!--    <p>There are no posts yet<span th:if="${isAuthorized}">, You can write a post by filling in the form above</span><span th:unless="${isAuthorized}">.</span>-->
+<!--    </p>-->
+<!--&lt;!&ndash;    <span sec:authentication="principal.authorities">Roles</span>&ndash;&gt;-->
+<!--&lt;!&ndash;    <div sec:authorize="hasAuthority('ADMIN')">&ndash;&gt;-->
+<!--&lt;!&ndash;        This content is only shown to administrators.&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <div sec:authorize="hasAuthority('USER')">&ndash;&gt;-->
+<!--&lt;!&ndash;        This content is only shown to users.&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+<!--</main>-->
+
+<!--<div class="container" th:if="${posts.size() > 0}">-->
+<!--  <div class="row justify-content-md-center">-->
+<!--    <div class="col-sm-4 col-lg-3" th:each="post : ${posts}">-->
+<!--      <div class="card" style="width: 18rem;" >-->
+<!--        <div class="card-header post-header" >-->
+<!--          <span><img src="../static/images/profile.png" th:src="@{/images/profile.png}" th:alt="${post.getApplicationUser().getFirstName()}" alt=""></span>-->
+<!--          <a th:href="${'/user/' + post.getApplicationUser().getId()}">-->
+<!--            <span th:text="${post.getApplicationUser().getFirstName() + ' ' + post.getApplicationUser().getLastName()}" ></span>-->
+<!--          </a>-->
+<!--        </div>-->
+<!--        <div class="card-body">-->
+<!--          <p class="card-text" th:text="'Created at: ' +${post.getFormattedDate()}"></p>-->
+<!--          <p class="card-text" th:text="${post.body}"></p>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--<div class="container" th:unless="${posts.size() > 0}">-->
+<!--  <div class="row justify-content-md-center">-->
+<!--    <p>There are no posts yet.</p>-->
+<!--  </div>-->
+<!--</div>-->
+<footer th:replace="fragments/footer.html :: footer"> </footer>
+
+</body>
+</html>
